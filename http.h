@@ -312,7 +312,15 @@ HTTP_SOCKET http_internal_connect( char const* address, char const* port )
 
     // create the socket
     HTTP_SOCKET sock = socket( addri->ai_family, addri->ai_socktype, addri->ai_protocol );
-    if( sock == -1) 
+        
+    {
+        int option_value = 1; /* Set NOSIGPIPE to ON */
+        if (setsockopt (sock, SOL_SOCKET, SO_NOSIGPIPE, &option_value, sizeof(option_value)) < 0) {
+            perror("setsockopt(,,SO_NOSIGPIPE)");
+        }
+    }
+
+    if( sock == -1)
         {
         freeaddrinfo( addri );
         return HTTP_INVALID_SOCKET;
